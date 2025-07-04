@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Test</title>
+    <link rel="stylesheet" href="../static/index.css">
+    <link rel="stylesheet" href="../static/modal.css">
+</head>
+<body>
+    <h1 id="message" style="transition: all 1   s ease;position: absolute; top: 10%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: red;">{%if messagem %}{{ messagem }}{% endif %}</h1>
+   
+    <div class="modal new">
+        <div class="content-modal">
+            <h2>Created new system</h2>
+            <form action="/add-key" method="get" class="form-container" style="gap: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <label for="systemName">System Name:</label>
+                <input type="text" id="systemName" name="systemName" class="form-input">
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; ">
+                    <button type="button" class="btn bg-red hover:red" onclick="alterShowModal('new', 'none')">Cancel</button>
+                    <button type="submit" class="btn bg-green hover:green">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="modal addkey">
+        <div class="content-modal">
+            <h2>Add new Key</h2>
+            <form action="/add-key" method="post" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3rem;">
+                <div class="internal-group">
+                    <label for="keyName">Key Name:</label>
+                    <input type="text" id="nameKey" name="nameKey" class="form-input">
+                </div>
+                <div class="internal-group">
+                    <label for="keyName">Key File:</label>
+                    <input type="text" id="keyFile" name="keyFile" class="form-input" readonly>
+                    <button type="button" class="btn bg-green hover:green" onclick="pathFile('keyFile')">Select</button>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; ">
+                    <button type="button" class="btn bg-red hover:red" onclick="alterShowModal('addkey', 'none')">Cancel</button>
+                    <button type="submit" class="btn bg-green hover:green">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+        <div class="modal adddebug">
+        <div class="content-modal">
+            <h2>Add new Debug</h2>
+            <form action="/add-debug" method="post" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3rem;">
+                <div class="internal-group">
+                    <label for="debugName">Debug Name:</label>
+                    <input type="text" id="debugName" name="debugName" class="form-input">
+                </div>
+                <div class="internal-group">
+                    <label for="debugFolder">Debug Folder:</label>
+                    <input type="text" id="debugFolder" name="debugFolder" class="form-input" readonly>
+                    <button type="button" class="btn bg-green hover:green" onclick="pathFile('debugFolder')">Select</button>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; ">
+                    <button type="button" class="btn bg-red hover:red" onclick="alterShowModal('adddebug', 'none')">Cancel</button>
+                    <button type="submit" class="btn bg-green hover:green">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="modal edit">
+        <div class="content-modal" style="width: 50%;">
+            <h2>Edit System</h2>
+            <form action="/edit-system" method="post" class="form-container" style="gap: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                
+                
+                <label for="editSystemName">System Name:</label>
+                <input type="text" id="editSystemName" name="editSystemName" class="form-input">
+                <input type="hidden" id="editSystemNameOld" name="editSystemNameOld" class="form-input">
+
+
+                <label for="debugSystem">Debug select:</label>
+                <input type="hidden" id="debugSystemOld" name="debugSystemOld" class="form-input" placeholder="Debug Name">
+                <select name="debugSystem" id="debugSystem" class="form-input">
+                </select>
+
+                <label for="systemName">Key select:</label>
+                <input type="hidden" id="keySystemOld" name="keySystemOld" class="form-input">
+                <select name="keySelect" id="keySelect" class="form-input">
+                </select>
+
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+                    <button type="button" class="btn bg-red hover:red" onclick="alterShowModal('edit', 'none');">Cancel</button>
+                    <button type="submit" class="btn bg-green hover:green">Save</button>
+                </div>
+            </form>
+        </div>  
+    </div>
+
+
+    <div class="modal edit-base">
+        <div class="content-modal" style="width: 50%;">
+            <h2>Edit System</h2>
+            <form action="/edit-system-base" method="post" class="form-container" style="gap: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                
+                
+                <label for="editSystemNameBase">System Name:</label>
+                <input type="text" id="editSystemNameBase" name="editSystemNameBase" class="form-input" readonly>
+
+                <label for="keySystem">Key select:</label>
+                <input type="hidden" id="keySystemOldBase" name="keySystemOldBase" class="form-input">
+                <select name="keySelectBase" id="keySelectBase" class="form-input">
+                </select>
+
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+                    <button type="button" class="btn bg-red hover:red" onclick="alterShowModal('edit-base', 'none');">Cancel</button>
+                    <button type="submit" class="btn bg-green hover:green">Save</button>
+                </div>
+            </form>
+        </div>  
+    </div>
+
+
+    <div class="container">
+        <div class="header">
+            <a class="btn-lg bg-yellow hover:yellow" href="/configure">Configurations</a>
+            <button class="btn-lg bg-green hover:green" type="button" onclick="alterShowModal('new', 'flex')">New System</button>
+            <button class="btn-lg bg-red hover:red" type="button" onclick="alterShowModal('addkey', 'flex')">Add Key</button>
+            <button class="btn-lg bg-yellow hover:yellow" type="button" onclick="alterShowModal('adddebug', 'flex')">Add Debug</button>
+        </div>
+        <table>
+            <colgroup>
+                <col style="width: 25%;">
+                <col style="width: 50%;">
+                <col style="width: 25%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Key Inserted</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ systemBase[0] }}</td>
+                    <td style="overflow-wrap: break-word;">{{ systemBase[1] }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <form action="/start-base" method="post">
+                                <button type="submit" class="btn bg-green hover:green" >Execute</button>
+                            </form>
+                            <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit-base', 'flex'); insertInformationBase()">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+                {% for system in systems %}
+                    <tr>
+                        <td>{{ system[0] }}</td>
+                        <td style="overflow-wrap: break-word;" class="{% if system[1] == 'Key is not in the storage system' or system[1] == 'keyless system' %}text-error{% endif %}">
+                            {{ system[1] }}
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+                                <form action="/start" method="post">
+                                    <input type="hidden" value="{{ system[0] }}" name="executeSystem" id="executeSystem">
+                                    <button type="submit" class="btn bg-green hover:green" >Execute</button>
+                                </form>
+                                <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit', 'flex'); insertInformation('{{ system[0] }}')">Edit</button>
+                                <form action="/remove-system" method="post">
+                                    <input type="hidden" id="systemName" name="systemName" value="{{ system[0] }}">
+                                    <button type="submit" class="btn bg-red hover:red">Remove</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module" src="../static/index.js"></script>
+    <script type="module" src="../static/initConfig.js"></script>
+</body>
+</html>
