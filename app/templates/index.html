@@ -6,6 +6,7 @@
     <title>Automate Test</title>
     <link rel="stylesheet" href="../static/index.css">
     <link rel="stylesheet" href="../static/modal.css">
+    <link rel="stylesheet" href="../static/table.css">
 </head>
 <body>
     <h1 id="message" style="transition: all 1   s ease;position: absolute; top: 10%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: red;">{%if messagem %}{{ messagem }}{% endif %}</h1>
@@ -47,7 +48,7 @@
     </div>
 
 
-        <div class="modal adddebug">
+    <div class="modal adddebug">
         <div class="content-modal">
             <h2>Add new Debug</h2>
             <form action="/add-debug" method="post" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3rem;">
@@ -124,61 +125,69 @@
 
     <div class="container">
         <div class="header">
-            <a class="btn-lg bg-yellow hover:yellow" href="/configure">Configurations</a>
-            <button class="btn-lg bg-green hover:green" type="button" onclick="alterShowModal('new', 'flex')">New System</button>
-            <button class="btn-lg bg-red hover:red" type="button" onclick="alterShowModal('addkey', 'flex')">Add Key</button>
-            <button class="btn-lg bg-yellow hover:yellow" type="button" onclick="alterShowModal('adddebug', 'flex')">Add Debug</button>
+            <div class="search-container">
+                <input type="text" name="search" id="search" value="{{search}}" placeholder="Search...">
+                <button class="button-search bg-green hover:green" type="button" onclick="searchBar();">Search</button>
+            </div>
+            <div class="action-buttons active-buttons">
+                <a href="/configure"><button class="btn-lg bg-yellow hover:yellow">Configurations</button></a>
+                <button class="btn-lg bg-green hover:green" type="button" onclick="alterShowModal('new', 'flex')">New System</button>
+                <button class="btn-lg bg-red hover:red" type="button" onclick="alterShowModal('addkey', 'flex')">Add Key</button>
+                <button class="btn-lg bg-yellow hover:yellow" type="button" onclick="alterShowModal('adddebug', 'flex')">Add Debug</button>
+                <a href="/debug" ><button class="btn-lg bg-green hover:green">Debugs</button></a>
+            </div>
         </div>
-        <table>
-            <colgroup>
-                <col style="width: 25%;">
-                <col style="width: 50%;">
-                <col style="width: 25%;">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>System</th>
-                    <th>Key Inserted</th>
-                    <th style="text-align: center;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ systemBase[0] }}</td>
-                    <td style="overflow-wrap: break-word;">{{ systemBase[1] }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <form action="/start-base" method="post">
-                                <button type="submit" class="btn bg-green hover:green" >Execute</button>
-                            </form>
-                            <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit-base', 'flex'); insertInformationBase()">Edit</button>
-                        </div>
-                    </td>
-                </tr>
-                {% for system in systems %}
+        <div class="scrollable-table">
+            <table class="table">
+                <colgroup>
+                    <col style="width: 25%;">
+                    <col style="width: 50%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
                     <tr>
-                        <td>{{ system[0] }}</td>
-                        <td style="overflow-wrap: break-word;" class="{% if system[1] == 'Key is not in the storage system' or system[1] == 'keyless system' %}text-error{% endif %}">
-                            {{ system[1] }}
-                        </td>
-
+                        <th>System</th>
+                        <th>Key Inserted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ systemBase[0] }}</td>
+                        <td>{{ systemBase[1] }}</td>
                         <td>
                             <div class="action-buttons">
-                                <form action="/start" method="post">
-                                    <input type="hidden" value="{{ system[0] }}" name="executeSystem" id="executeSystem">
+                                <form action="/start-base" method="post">
                                     <button type="submit" class="btn bg-green hover:green" >Execute</button>
                                 </form>
-                                <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit', 'flex'); insertInformation('{{ system[0] }}')">Edit</button>
-                                <form action="/remove-system" method="post">
-                                    <input type="hidden" id="systemName" name="systemName" value="{{ system[0] }}">
-                                    <button type="submit" class="btn bg-red hover:red">Remove</button>
-                                </form>
+                                <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit-base', 'flex'); insertInformationBase()">Edit</button>
                             </div>
                         </td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% for system in systems %}
+                        <tr>
+                            <td>{{ system[0] }}</td>
+                            <td class="{% if system[1] == 'Key is not in the storage system' or system[1] == 'keyless system' %}text-error{% endif %}">
+                                {{ system[1] }}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form action="/start" method="post">
+                                        <input type="hidden" value="{{ system[0] }}" name="executeSystem" id="executeSystem">
+                                        <button type="submit" class="btn bg-green hover:green" >Execute</button>
+                                    </form>
+                                    <button class="btn bg-yellow hover:yellow" onclick="alterShowModal('edit', 'flex'); insertInformation('{{ system[0] }}')">Edit</button>
+                                    <form action="/remove-system" method="post">
+                                        <input type="hidden" id="systemName" name="systemName" value="{{ system[0] }}">
+                                        <button type="submit" class="btn bg-red hover:red">Remove</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script type="module" src="../static/index.js"></script>

@@ -5,60 +5,29 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    overflow: hidden;
 }
 
 :root {
     --primary-color: #f5f5f5;
     --text-color: #333333;
     --border-color: #e0e0e0;
-    --bg-color: #ffffff;
+    --bg-color: #f1f1f1;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
+    background-color: rgb(255, 255, 255);
     color: var(--text-color);
-    line-height: 1.6;
     padding: 0;
     margin: 0;
 }
 
-table {
-    table-layout: fixed; 
-
-    width: 70%;
-    border-collapse: collapse;
-    background-color: var(--white);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-.coluna-10 { width: 10%; }
-.coluna-25 { width: 25%; }
-.coluna-65 { width: 65%; }
-
-thead {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    font-weight: 500;
-}
-
-th, td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-tbody tr:hover {
-    background-color: rgba(67, 97, 238, 0.05);
-}
-
-.action-buttons {
+.header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    flex-direction: row;
+    width: 70%;
+    gap: 7rem;
 }
 
 .btn {
@@ -112,20 +81,10 @@ tbody tr:hover {
 }
 
 .hover\:yellow:hover {
-    background-color: #f5eb96; /* yellow
- um pouco mais escuro */
+    background-color: #f5eb96; 
 }
 
 @media (max-width: 768px) {
-    table {
-        display: block;
-        overflow-x: auto;
-    }
-    
-    .action-buttons {
-        flex-wrap: wrap;
-    }
-    
     .btn {
         padding: 0.375rem 0.75rem;
         font-size: 0.75rem;
@@ -138,13 +97,8 @@ tbody tr:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
-tbody tr {
-    animation: fadeIn 0.3s ease forwards;
-}
 
-tbody tr:nth-child(1) { animation-delay: 0.1s; }
-tbody tr:nth-child(2) { animation-delay: 0.2s; }
-tbody tr:nth-child(3) { animation-delay: 0.3s; }
+
 
 .form-container {
     width: 70%;
@@ -189,4 +143,78 @@ label {
 .text-error {
     color: red;
     font-weight: 600;
+}
+
+.search-container {
+    flex: 2;
+    display: flex;
+    width: 100%;
+    margin: 2rem auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 30px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Campo de entrada */
+#search {
+    flex-grow: 1;
+    padding: 15px 20px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+/* Botão de pesquisa */
+.button-search {
+    padding: 0 25px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Placeholder */
+#search::placeholder {
+    color: #a8a8a8;
+    font-style: italic;
+}
+
+/* Efeitos de foco */
+#search:focus {
+    background-color: #fff;
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+    .search-container {
+        flex-direction: column;
+        border-radius: 15px;
+    }
+    
+    .button-search {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 1587px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+        gap: 0rem; 
+        margin-bottom: 1rem;
+    }
+
+    .search-container {
+        margin: 1rem auto;
+        width: 70%;
+    }
 }

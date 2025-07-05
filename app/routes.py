@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, request, redirect, url_for, jsonify
 from app.utils.Utils import FileFolder, Persistence, os, Command, Hash
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index(messagem = None):
     
     p = Persistence()
@@ -49,8 +49,17 @@ def index(messagem = None):
         
         info = [system, key]
         systems.append(info)
+        
+    search = request.args.get('search')
+    if search: 
+        searchSystems = []
+        for system in systems: 
+            if str(search).lower() in str(system[0]).lower(): 
+                searchSystems.append(system)
+        
+        return render_template('index.html', systems=searchSystems, systemBase=systemBase, messagem = messagem, search=search)
     
-    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem)
+    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem, search="")
 
 @app.route('/configure', methods=['GET', 'POST'])
 def initConfigs(): 
@@ -306,3 +315,19 @@ def startBase():
     os.system("start " + os.path.join(p.BaseSystem, p.FileExecute))
     
     pass
+
+
+@app.route("/debug", methods=['GET'])
+def Debug():
+    p = Persistence()
+    
+    listdebugs = Command.listdir(p.FolderDebugs)
+    
+    return render_template('debugs.html', debugs=listdebugs)
+
+@app.route("/remove-debug", methods=['POST'])
+def RemoveDebug():
+    p = Persistence()
+    debug = request.form['debug']
+    Command.remove(os.path.join(p.FolderDebugs, debug))
+    return redirect('/debug')

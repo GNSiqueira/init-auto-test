@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/index.css">
+    <title>Automate Test</title>
+</head>
+<body>
+    <div class="container">
+        <div class="scrollble-table">
+            <table>
+                <colgroup>
+                    <col style="width: 75%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Debugs</th>
+                        <th style="text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for debug in debugs %}
+                        <tr>
+                            <td>{{ debug }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form action="/remove-debug" method="post">
+                                        <input type="hidden" id="debug" name="debug" value="{{ debug }}">
+                                        <button type="submit" class="btn bg-red hover:red">Remove</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

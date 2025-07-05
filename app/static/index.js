@@ -65,7 +65,21 @@ function timeAlert() {
     }, 10000);
 }
 
+function searchBar() {
+    const searchInput = document.getElementById('search');
+
+    const searchTerm = searchInput.value.trim();
+
+    const searchURL = '/?search=' + encodeURIComponent(searchTerm);
+
+    window.location.href = searchURL;
+}
+
+window.searchBar = searchBar;
+
 timeAlert();
+
+window.searchBar = searchBar;
 
 window.insertInformationBase = insertInformationBase;
 
