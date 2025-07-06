@@ -323,7 +323,13 @@ def Debug():
     
     listdebugs = Command.listdir(p.FolderDebugs)
     
-    return render_template('debugs.html', debugs=listdebugs)
+    search = request.args.get('search')
+    
+    if search:
+        listdebugsNew = [debug for debug in listdebugs if search.lower() in str(debug).lower()]
+        return render_template('debugs.html', debugs=listdebugsNew, search=search)
+    
+    return render_template('debugs.html', debugs=listdebugs, search="")
 
 @app.route("/remove-debug", methods=['POST'])
 def RemoveDebug():

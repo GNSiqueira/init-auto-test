@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/index.css">
+    <link rel="stylesheet" href="../static/table.css">
     <title>Automate Test</title>
 </head>
 <body>
     <div class="container">
-        <div class="scrollble-table">
-            <table>
+        <div class="header">
+            <div class="action-buttons active-buttons">
+                <a href="/" ><button class="btn-lg bg-green hover:green">Home</button></a>
+            </div>
+            <div class="search-container">
+                <input type="text" name="search" id="search" value="{{search}}" placeholder="Search...">
+                <button class="button-search bg-green hover:green" type="button" onclick="searchBarDebug();">Search</button>
+            </div>
+        </div>
+        <div class="scrollable-table">
+            <table class="table">
                 <colgroup>
                     <col style="width: 75%;">
                     <col style="width: 25%;">
@@ -17,15 +27,15 @@
                 <thead>
                     <tr>
                         <th>Debugs</th>
-                        <th style="text-align: center;">Action</th>
+                        <th style="border-radius: 0 10px 0 0; border-right: 0;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for debug in debugs %}
                         <tr>
                             <td>{{ debug }}</td>
-                            <td>
-                                <div class="action-buttons">
+                            <td style=" border-right: 0;">
+                                <div class="action-buttons" >
                                     <form action="/remove-debug" method="post">
                                         <input type="hidden" id="debug" name="debug" value="{{ debug }}">
                                         <button type="submit" class="btn bg-red hover:red">Remove</button>
@@ -38,5 +48,6 @@
             </table>
         </div>
     </div>
+    <script type="module" src="../static/index.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
 
 .scrollable-table {
    max-height: 60%; 
-   overflow-y: scroll;
+   overflow-y: auto;
    width: 70%;
    scroll-snap-type: y mandatory;
 }
@@ -42,13 +42,34 @@ th {
     padding: 1.4rem;
 }
 
+tr {
+    position: relative;
+}
+
+/* 2. Agora, aplicamos o pseudo-elemento na ÚLTIMA CÉLULA de cada linha. */
+tr td:last-child::after {
+    content: ""; /* Obrigatório para o ::after funcionar */
+    
+    /* 3. Posicionamos a linha de forma absoluta em relação à 'tr' */
+    position: absolute;
+    bottom: 0;  /* Alinha na parte de baixo da linha */
+    right: 50%;    /* Começa no canto esquerdo da linha */
+
+    transform: translateX(50%);
+    
+    /* 4. Definimos a aparência da linha */
+    width: 95%; /* Ocupa 100% da largura da 'tr' */
+    height: 1px;
+    background-color: var(--border-color);
+}
+
 td {
     padding: 0.6rem;
-    border-bottom: 1px solid var(--border-color);
     background-color: var(--bg-color)
 }
 
-th:nth-child(1), td:nth-child(1),th:nth-child(2), td:nth-child(2) {
+th:nth-child(1),
+th:nth-child(2) {
     border-right: 1px solid var(--border-color);
 }
 

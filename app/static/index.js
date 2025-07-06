@@ -75,7 +75,17 @@ function searchBar() {
     window.location.href = searchURL;
 }
 
-window.searchBar = searchBar;
+function searchBarDebug() {
+    const searchInput = document.getElementById('search');
+
+    const searchTerm = searchInput.value.trim();
+
+    const searchURL = '/debug?search=' + encodeURIComponent(searchTerm);
+
+    window.location.href = searchURL;
+}
+
+window.searchBarDebug = searchBarDebug;
 
 timeAlert();
 
