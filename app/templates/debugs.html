@@ -6,11 +6,12 @@
     <link rel="stylesheet" href="../static/index.css">
     <link rel="stylesheet" href="../static/table.css">
     <link rel="stylesheet" href="../static/load.css">
+    <link rel="stylesheet" href="../static/modal.css">
     <title>Automate Test</title>
 </head>
 <body>
     
-    <div class="modal loading">
+    <div class="modal-loading loading">
         <div class="loading-container">
             <div class="loading-text">Carregando...</div>
             <div class="loading-spinner"></div>
@@ -50,7 +51,7 @@
                                 <div class="action-buttons" >
                                     <form action="/remove-debug" method="post">
                                         <input type="hidden" id="debug" name="debug" value="{{ debug }}">
-                                        <button type="submit" class="btn bg-red hover:red" onclick="alterShowModal('loading', 'none');">Remove</button>
+                                        <button type="submit" class="btn bg-red hover:red" onclick="alterShowModal('loading', 'flex');">Remove</button>
                                     </form>
                                 </div>
                             </td>

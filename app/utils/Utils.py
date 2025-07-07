@@ -182,11 +182,14 @@ class Persistence:
 class Hash:
     @staticmethod
     def calculateHashFile(caminho_arquivo) -> str:
+        if not os.path.exists(caminho_arquivo):
+            raise Exception(f"O arquivo '{caminho_arquivo}' nao existe.")
+        
         if not isinstance(caminho_arquivo, str):
-            return 1, "O caminho do arquivo deve ser uma string."
+            raise Exception("O argumento 'caminho_arquivo' deve ser uma string.")
         
         if os.path.isdir(caminho_arquivo):
-            return 2, "O arquivo não existe."
+            raise Exception("O argumento 'caminho_arquivo' deve ser um caminho para um arquivo.")
         
         with open(caminho_arquivo, 'rb') as f:
             conteudo = f.read()
@@ -202,6 +205,18 @@ class Command:
     @staticmethod
     def copy(pasta_origem, pasta_destino):
         print(f"Iniciando cópia recursiva de '{pasta_origem}' para '{pasta_destino}'...")
+        
+        if not os.path.exists(pasta_origem):
+            raise Exception(f"O diretório de origem '{pasta_origem}' nao existe.")
+        
+        if not os.path.exists(pasta_destino):
+            raise Exception(f"O diretório de destino '{pasta_destino}' nao existe.")
+        
+        if not os.path.isdir(pasta_origem):
+            raise Exception(f"O argumento 'pasta_origem' deve ser um diretório.")
+        
+        if not os.path.isdir(pasta_destino):
+            raise Exception(f"O argumento 'pasta_destino' deve ser um diretório.")
 
         os.makedirs(pasta_destino, exist_ok=True)
 
@@ -234,6 +249,18 @@ class Command:
     @staticmethod
     def move(pasta_origem, pasta_destino):
         print(f"Iniciando MOVER conteúdo de '{pasta_origem}' para '{pasta_destino}'...")
+        
+        if not os.path.exists(pasta_origem):
+            raise Exception(f"O diretório de origem '{pasta_origem}' nao existe.")
+        
+        if not os.path.exists(pasta_destino):
+            raise Exception(f"O diretório de destino '{pasta_destino}' nao existe.")
+        
+        if not os.path.isdir(pasta_origem):
+            raise Exception(f"O argumento 'pasta_origem' deve ser um diretório.")
+        
+        if not os.path.isdir(pasta_destino):
+            raise Exception(f"O argumento 'pasta_destino' deve ser um diretório.")
 
         if not os.path.isdir(pasta_origem):
             print(f"Erro: A pasta de destino '{pasta_origem}' não existe ou não é um diretório.")
@@ -277,12 +304,19 @@ class Command:
     
     @staticmethod
     def remove(pasta):
+        if not os.path.exists(pasta):
+            raise Exception(f"O diretório '{pasta}' nao existe.")
         shutil.rmtree(pasta)
 
     @staticmethod
     def removeFile(file):
-        if os.path.exists(file):
-            os.remove(file)
+        if not os.path.exists(file):
+            raise Exception(f"O arquivo '{file}' nao existe.")
+        
+        if not os.path.isfile(file):
+            raise Exception(f"O argumento 'file' deve ser um caminho para um arquivo.")
+        
+        os.remove(file)
     
     @staticmethod
     def copyFile(arquivo_origem, pasta_destino):
@@ -295,11 +329,22 @@ class Command:
             print(f"Arquivo '{os.path.basename(arquivo_origem)}' copiado para '{pasta_destino}' com sucesso.")
             return True
         except Exception as e:
-            print(f"Erro ao copiar o arquivo: {e}")
-            return False
+            raise Exception(f"Erro ao copiar o arquivo: {e}")
 
     @staticmethod
     def descompact(caminho_arquivo, caminho_destino):
+        if not os.path.exists(caminho_destino):
+            raise Exception(f"O diretório de destino '{caminho_destino}' não existe.")
+        
+        if not os.path.exists(caminho_arquivo):
+            raise Exception(f"O arquivo '{caminho_destino}' não existe.")
+        
+        print(Command.validate_compact(caminho_arquivo))
+        
+        if not Command.validate_compact(caminho_arquivo):
+            raise Exception(f"O arquivo '{caminho_arquivo}' não é um arquivo compactado.")
+        
+        
         shutil.unpack_archive(caminho_arquivo, caminho_destino)
 
     @staticmethod
@@ -308,6 +353,38 @@ class Command:
             os.makedirs(pasta)
             
         return True
-            
+    
+    @staticmethod     
     def listdir(pasta):
         return os.listdir(pasta)
+    
+    @staticmethod
+    def validate_compact(caminho_do_arquivo):
+        ASSINATURAS_COMPACTADAS = {
+            "ZIP": b'PK\x03\x04',
+            "RAR": b'Rar!\x1a\x07\x00',
+            "7z": b"7z\xbc\xaf'\x1c",
+            "GZIP": b'\x1f\x8b',
+            "BZIP2": b'BZ'
+        }
+
+        try:
+            if os.path.isdir(caminho_do_arquivo):
+                raise Exception("O caminho que passou deve ser um arquivo compactado!")
+            
+            with open(caminho_do_arquivo, 'rb') as f:
+                # Lê o número de bytes da assinatura mais longa para garantir a comparação
+                max_len = max(len(s) for s in ASSINATURAS_COMPACTADAS.values())
+                bytes_iniciais = f.read(max_len)
+                
+                for formato, assinatura in ASSINATURAS_COMPACTADAS.items():
+                    if bytes_iniciais.startswith(assinatura):
+                        print(f"O arquivo '{caminho_do_arquivo}' parece ser um formato '{formato}'.")
+                        return formato # É um arquivo compactado
+                
+                print(f"O arquivo '{caminho_do_arquivo}' não corresponde a nenhum formato compactado conhecido.")
+                return None # Não é um formato compactado conhecido
+                
+        except FileNotFoundError:
+            print(f"Erro: Arquivo não encontrado em '{caminho_do_arquivo}'")
+            return None
