@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/index.css">
     <link rel="stylesheet" href="../static/table.css">
+    <link rel="stylesheet" href="../static/load.css">
     <title>Automate Test</title>
 </head>
 <body>
+    
+    <div class="modal loading">
+        <div class="loading-container">
+            <div class="loading-text">Carregando...</div>
+            <div class="loading-spinner"></div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="action-buttons active-buttons">
@@ -38,7 +50,7 @@
                                 <div class="action-buttons" >
                                     <form action="/remove-debug" method="post">
                                         <input type="hidden" id="debug" name="debug" value="{{ debug }}">
-                                        <button type="submit" class="btn bg-red hover:red">Remove</button>
+                                        <button type="submit" class="btn bg-red hover:red" onclick="alterShowModal('loading', 'none');">Remove</button>
                                     </form>
                                 </div>
                             </td>
@@ -49,5 +61,6 @@
         </div>
     </div>
     <script type="module" src="../static/index.js"></script>
+    <script type="module" src="../static/load.js"></script>
 </body>
 </html>
