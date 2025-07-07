@@ -4,9 +4,13 @@ from app.utils.Utils import FileFolder, Persistence, os, Command, Hash
 
 @app.route('/', methods=['GET'])
 def index(messagem = None):
-    
     p = Persistence()
     
+    print(p.validate())
+    
+    if not p.validate():
+        return redirect('/configure')
+        
     # nome, key
     systems = []
         
@@ -91,15 +95,19 @@ def initConfigs():
 
 @app.route('/path', methods=['GET'])
 def path():
-    return FileFolder().getPathFolder()
+    return FileFolder.getPathFolder()
 
 @app.route('/path-file', methods=['GET'])
 def pathFile():
-    return FileFolder().getPathFile()
+    return FileFolder.getPathFile()
 
 @app.route('/new-system', methods=['GET'])
 def newSystem():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
+    
     nameFolder = request.args.get('systemName')
     pathNewSystem = os.path.join(p.LocateFolderSystems, nameFolder)
 
@@ -111,6 +119,10 @@ def newSystem():
 @app.route('/remove-system', methods=['POST'])
 def removeSystem():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
+    
     systemName = request.form['systemName']
     pathDeleteSystem = os.path.join(p.LocateFolderSystems, systemName)
 
@@ -125,6 +137,9 @@ def removeSystem():
 @app.route('/edit-system', methods=['GET', 'POST'])
 def editSystem():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
     
     if request.method == 'POST':
         
@@ -202,6 +217,9 @@ def editSystem():
 def editSystemBase():
     p = Persistence()
     
+    if not p.validate(): 
+        return redirect('/configure')
+    
     if request.method == 'POST':
         
         keySelect = request.form["keySelectBase"] 
@@ -248,10 +266,13 @@ def editSystemBase():
         'listKeys': listKeys,
     })
 
-
 @app.route('/add-key', methods=['POST'])
 def addKey():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
+    
     nameKey = request.form['nameKey']
     keyFile = request.form['keyFile']
     
@@ -275,11 +296,12 @@ def addKey():
     
     return redirect('/')
 
-
-# debugFolder debugName add-debug
 @app.route('/add-debug', methods=['POST'])
 def AddDebug():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
     
     debugName = request.form['debugName']
     debugFolder = request.form['debugFolder']
@@ -302,24 +324,33 @@ def AddDebug():
 @app.route('/start', methods=['POST'])
 def start():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
+    
     executeSystem = request.form['executeSystem']
     
     os.system("start " + os.path.join(p.LocateFolderSystems, executeSystem, p.FileExecute))
     
-    pass
+    return redirect('/')
 
 @app.route('/start-base', methods=['POST'])
 def startBase():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
         
     os.system("start " + os.path.join(p.BaseSystem, p.FileExecute))
     
-    pass
-
+    return redirect('/')
 
 @app.route("/debug", methods=['GET'])
 def Debug():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
     
     listdebugs = Command.listdir(p.FolderDebugs)
     
@@ -334,6 +365,10 @@ def Debug():
 @app.route("/remove-debug", methods=['POST'])
 def RemoveDebug():
     p = Persistence()
+    
+    if not p.validate(): 
+        return redirect('/configure')
+    
     debug = request.form['debug']
     Command.remove(os.path.join(p.FolderDebugs, debug))
     return redirect('/debug')

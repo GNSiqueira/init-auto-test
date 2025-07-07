@@ -8,17 +8,13 @@
             "name": "Python Debugger: Flask",
             "type": "debugpy",
             "request": "launch",
-            "module": "flask",
             "env": {
                 "FLASK_APP": "app/__init__.py",
-                "FLASK_DEBUG": "1"
-            },
-            "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true
+                "FLASK_DEBUG": "1", 
+                "FLASK_ENV": "development"
+            }, 
+            "program": "main.py"
+            
         },
         {
             "name": "Depurador do Python: Arquivo Atual",

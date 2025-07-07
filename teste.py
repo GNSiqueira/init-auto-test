@@ -1,9 +1,16 @@
-palavras = ["abacate", "abismo", "abdutor", "formabila", "paralelepido"]
-palavras_com_ab = [] # Cria uma lista vazia para guardar os resultados
+import tkinter as tk
+from tkinter import filedialog
+from pathlib import Path
 
-for palavra in palavras:
-  if "ab" in palavra:
-    palavras_com_ab.append(palavra) # Adiciona a palavra na nova lista
+class PastaUtils:
+    @staticmethod
+    def getPathFolder():
+        root = tk.Tk()
+        root.withdraw()
+        initial_path = str(Path.home() / "Downloads")
+        print("Pasta inicial:", initial_path)
+        return filedialog.askdirectory(initialdir=initial_path)
 
-print(f"As palavras que contêm 'ab' são: {palavras_com_ab}")
-# Saída: As palavras que contêm 'ab' são: ['abacate', 'abismo', 'abdutor', 'formabila']
+# Exemplo de uso:
+pasta = PastaUtils.getPathFolder()
+print("Pasta selecionada:", pasta)

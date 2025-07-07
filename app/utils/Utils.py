@@ -1,19 +1,74 @@
-from tkinter import filedialog
-import os, json, hashlib, shutil
+import os, json, hashlib, shutil, sys, subprocess
 from pathlib import Path
+import tkinter as tk
+from tkinter import filedialog
 
 class FileFolder:
     @staticmethod
     def getPathFolder():
+        if os.name == 'nt':  # Windows
+            try:
+                # Constrói o caminho para o script auxiliar
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                helper_script_path = os.path.join(script_dir, 'tkinter_dialog_helper.py')
+
+                # Executa o script auxiliar em um processo separado e captura sua saída
+                result = subprocess.run(
+                    [sys.executable, helper_script_path, "folder"], # sys.executable garante o interpretador Python correto
+                    capture_output=True, # Captura a saída padrão e de erro
+                    text=True,           # Decodifica a saída como texto
+                    check=True           # Lança CalledProcessError se o script retornar um código de erro
+                )
+                # O caminho selecionado é impresso na saída padrão pelo script auxiliar
+                selected_path = result.stdout.strip()
+                return selected_path
+            except subprocess.CalledProcessError as e:
+                print(f"Erro ao executar o script Tkinter para pasta: {e}")
+                print(f"Stdout: {e.stdout}")
+                print(f"Stderr: {e.stderr}")
+                return "" # Retorna string vazia ou trate o erro apropriadamente
+            except Exception as e:
+                print(f"Erro inesperado ao obter o caminho da pasta: {e}")
+                return ""
         return filedialog.askdirectory(initialdir=str(Path.home() / "Downloads"))
 
     @staticmethod
     def getPathFile():
+        if os.name == 'nt':
+            try:
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                helper_script_path = os.path.join(script_dir, 'tkinter_dialog_helper.py')
+
+                result = subprocess.run(
+                    [sys.executable, helper_script_path, "file"],
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                selected_path = result.stdout.strip()
+                return selected_path
+            except subprocess.CalledProcessError as e:
+                print(f"Erro ao executar o script Tkinter para arquivo: {e}")
+                print(f"Stdout: {e.stdout}")
+                print(f"Stderr: {e.stderr}")
+                return ""
+            except Exception as e:
+                print(f"Erro inesperado ao obter o caminho do arquivo: {e}")
+                return ""
         return filedialog.askopenfilename(initialdir=str(Path.home() / "Downloads"))
     
 class Persistence:
     def __init__(self):
         pass
+    
+    @staticmethod
+    def validate():
+        p = Persistence()
+
+        if p.BaseSystem == "" or p.FolderKeys == "" or p.NameKey == "" or p.FileExecute == "" or p.FolderDebugs == "" or p.LocateFolderSystems == "":
+            return False
+        
+        return True
     
     def __genericSave(self, dado, name):
         file = Persistence.__load()
@@ -95,7 +150,7 @@ class Persistence:
                 return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             # Se o arquivo não existe ou está corrompido, retorna a estrutura padrão
-            return {"baseSystem": "", "folderKeys": "", "nameKey": "", "fileExecute": "", "folderDebugs": ""}
+            return {"baseSystem": "", "folderKeys": "", "nameKey": "", "fileExecute": "", "folderDebugs": "", "locateFolderSystems": "", "internalDebug": "Debug"}
     
     @staticmethod  
     def __config():
@@ -104,9 +159,8 @@ class Persistence:
         full_path = os.path.join(repository_path, file_name)
         
         if not os.path.exists(full_path):
-            # Cria o arquivo com a estrutura padrão se ele não existir
             with open(full_path, 'w', encoding='utf-8') as f:
-                json.dump({"baseSystem": "", "folderKeys": "", "systems": [], "nameKey": "", "fileExecute": "", "folderDebugs": "", "locateFolderSystems": "", "internalDebug": "Debug"}, f, indent=4)
+                json.dump({"baseSystem": "", "folderKeys": "", "nameKey": "", "fileExecute": "", "folderDebugs": "", "locateFolderSystems": "", "internalDebug": "Debug"}, f, indent=4)
 
         return full_path
     

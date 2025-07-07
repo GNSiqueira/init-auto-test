@@ -3,7 +3,9 @@ import { request } from "./script.js";
 async function addPath(inputId) {
     try {
         const input = document.getElementById(inputId);
-        const filePath = await request('/path', 'GET'); // Substitua '/path' pela sua rota Flask real
+        console.log(input);
+        const filePath = await request('/path', 'GET');
+        console.log(filePath);
         input.value = filePath;
     } catch (error) {
         console.error("Failed to get path:", error);
@@ -13,7 +15,7 @@ async function addPath(inputId) {
 async function pathFile(inputId) {
     try {
         const input = document.getElementById(inputId);
-        const filePath = await request('/path-file', 'GET'); // Substitua '/path' pela sua rota Flask real
+        const filePath = await request('/path-file', 'GET');
         input.value = filePath;
     } catch (error) {
         console.error("Failed to get path:", error);
