@@ -6,7 +6,8 @@ from app.utils.Utils import FileFolder, Persistence, os, Command, Hash
 def index():
     p = Persistence()
     
-    messagem = request.args.get('messagem')    
+    messagem = request.args.get('error') if request.args.get('error') is not None or request.args.get('error') != "" else ""    
+    sucess = request.args.get('sucess') if request.args.get('sucess') is not None or request.args.get('sucess') != "" else ""    
     
     
     if not p.validate():
@@ -62,9 +63,10 @@ def index():
             if str(search).lower() in str(system[0]).lower(): 
                 searchSystems.append(system)
         
-        return render_template('index.html', systems=searchSystems, systemBase=systemBase, messagem = messagem, search=search)
+        systems = searchSystems    
     
-    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem, search="")
+    
+    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem, sucess = sucess, search="")
 
 @app.route('/configure', methods=['GET', 'POST'])
 def initConfigs(): 
@@ -90,12 +92,12 @@ def initConfigs():
             p.InternalDebug = internalDebug
             
             
-            return redirect('/')
+            return redirect(url_for('index', sucess="Configurações salvas com sucesso!"))
         
         return render_template('initConfig.html', systemBase=p.BaseSystem, folderKeys=p.FolderKeys, nameKey=p.NameKey, fileExecute=p.FileExecute, folderDebugs=p.FolderDebugs, locateFolderSystems=p.LocateFolderSystems, internalDebug=p.InternalDebug)
 
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/path', methods=['GET'])
 def path():
@@ -103,7 +105,7 @@ def path():
         return FileFolder.getPathFolder()
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/path-file', methods=['GET'])
 def pathFile():
@@ -111,7 +113,7 @@ def pathFile():
         return FileFolder.getPathFile()
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/new-system', methods=['GET'])
 def newSystem():
@@ -127,10 +129,10 @@ def newSystem():
         if Command.mkdir(pathNewSystem):
             Command.copy(p.BaseSystem, pathNewSystem)
         
-        return redirect('/')
+        return redirect(url_for('index', sucess="Sistema criado com sucesso!"))
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/remove-system', methods=['POST'])
 def removeSystem():
@@ -146,9 +148,9 @@ def removeSystem():
 
         Command.remove(pathDeleteSystem)
         
-        return redirect('/')
+        return redirect(url_for('index', sucess="Sistema removido com sucesso!"))
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/edit-system', methods=['GET', 'POST'])
 def editSystem():
@@ -193,7 +195,7 @@ def editSystem():
                 Command.copy(os.path.join(p.FolderDebugs, debugSystem), os.path.join(p.LocateFolderSystems, EditSystemName))
                 Command.mkdir(os.path.join(p.LocateFolderSystems, EditSystemName, debugSystem))
                 changeKey()
-            return redirect('/')
+            return redirect(url_for('index', sucess="Sistema editado com sucesso!"))
         
         systemName = request.args.get('systemName')
         systemKey = os.path.join(p.LocateFolderSystems, systemName, p.NameKey)
@@ -229,7 +231,7 @@ def editSystem():
         })
         
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/edit-system-base', methods=['GET', 'POST'])
 def editSystemBase():
@@ -257,7 +259,7 @@ def editSystemBase():
                     os.rename(os.path.join(system, keySelect), os.path.join(system, p.NameKey))
             
             changeKey() 
-            return redirect('/')
+            return redirect(url_for('index', sucess="Sistema editado com sucesso!"))
         
         systemName = request.args.get('systemName')
         systemKey = os.path.join(p.BaseSystem, p.NameKey)
@@ -285,7 +287,7 @@ def editSystemBase():
         })
         
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/add-key', methods=['POST'])
 def addKey():
@@ -308,7 +310,7 @@ def addKey():
         for storedKey in storedKeys:
             hashStorageKey = Hash.calculateHashFile(os.path.join(p.FolderKeys, storedKey))
             if hashKeyFile == hashStorageKey:
-                return redirect(url_for('index', messagem="Key already exists"))
+                return redirect(url_for('index', error="Key already exists"))
         
         keyFileName = keyFile.split("/")[-1]
         
@@ -319,12 +321,10 @@ def addKey():
                 
             os.rename(os.path.join(p.FolderKeys, keyFileName), os.path.join(p.FolderKeys, nameKey))
         
-        raise Exception("Key added successfully")
-        
-        return redirect('/')
+        return redirect(url_for('index', sucess="Chave adicionada com sucesso!"))
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
     
 @app.route('/add-debug', methods=['POST'])
 def AddDebug():
@@ -339,21 +339,21 @@ def AddDebug():
         
         if p.InternalDebug: 
             if not os.path.exists(os.path.join(p.FolderDebugs, p.InternalDebug)):
-                return redirect(url_for('index', messagem="Internal Debug not found"))
+                return redirect(url_for('index', error="Internal Debug not found"))
             Command.descompact(debugFolder, p.FolderDebugs)
             Command.copy(os.path.join(p.FolderDebugs, p.InternalDebug), os.path.join(p.FolderDebugs, debugName))
             Command.remove(os.path.join(p.FolderDebugs, p.InternalDebug))
             Command.removeFile(debugFolder)
-            return redirect('/')
+            return redirect(url_for('index', sucess="Debug adicionado com sucesso!"))
         
         Command.mkdir(os.path.join(p.FolderDebugs, debugName))
         Command.descompact(debugFolder, os.path.join(p.FolderDebugs, debugName))
         Command.removeFile(debugFolder)
         
-        return redirect('/')
+        return redirect(url_for('index', sucess="Debug adicionado com sucesso!"))
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/start', methods=['POST'])
 def start():
@@ -367,10 +367,10 @@ def start():
         
         os.system("start " + os.path.join(p.LocateFolderSystems, executeSystem, p.FileExecute))
         
-        return redirect('/')
+        return redirect(url_for('index', sucess="Sistema iniciado com sucesso!"))
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route('/start-base', methods=['POST'])
 def startBase():
@@ -382,10 +382,10 @@ def startBase():
             
         os.system("start " + os.path.join(p.BaseSystem, p.FileExecute))
         
-        return redirect('/')
+        return redirect(url_for('index', sucess="Sistema iniciado com sucesso!"))
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route("/debug", methods=['GET'])
 def Debug():
@@ -406,7 +406,7 @@ def Debug():
         return render_template('debugs.html', debugs=listdebugs, search="")
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))
 
 @app.route("/remove-debug", methods=['POST'])
 def RemoveDebug():
@@ -421,4 +421,4 @@ def RemoveDebug():
         return redirect('/debug')
     
     except Exception as e:
-        return redirect(url_for('index', messagem=str(e)))
+        return redirect(url_for('index', error=str(e)))

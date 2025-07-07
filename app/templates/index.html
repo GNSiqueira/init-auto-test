@@ -10,7 +10,17 @@
     <link rel="stylesheet" href="../static/load.css">
 </head>
 <body>
-    <h1 id="message" style="transition: all 1   s ease;position: absolute; top: 10%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: red;">{%if messagem %}{{ messagem }}{% endif %}</h1>
+    <h1 id="message" {% if messagem %}
+        style="transition: all 1   s ease;position: absolute; top: 10%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: red;"
+    {% else %}
+        style="transition: all 1   s ease;position: absolute; top: 10%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: green;"
+    {% endif %}>
+    {%if messagem %}
+        {{ messagem }}
+    {% elif sucess %} 
+        {{ sucess }}
+    {% endif %}
+    </h1>
    
     <div class="modal-loading loading">
         <div class="loading-container">

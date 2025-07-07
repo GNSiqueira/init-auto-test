@@ -70,7 +70,7 @@ td {
 
 th:nth-child(1),
 th:nth-child(2) {
-    border-right: 1px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
 }
 
 
