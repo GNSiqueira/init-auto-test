@@ -85,6 +85,16 @@ function searchBarDebug() {
     window.location.href = searchURL;
 }
 
+function handleEnter(event) {
+    // Verifica se a tecla pressionada é o Enter (keyCode 13 ou key 'Enter')
+    if (event.key === 'Enter' || event.keyCode === 13) {
+        event.preventDefault(); // Impede o envio padrão do formulário se houver um
+        searchBar(); // Chama sua função de busca
+    }
+}
+
+window.handleEnter = handleEnter;
+
 window.searchBarDebug = searchBarDebug;
 
 timeAlert();

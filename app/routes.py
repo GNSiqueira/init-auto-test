@@ -57,16 +57,19 @@ def index():
         systems.append(info)
         
     search = request.args.get('search')
-    if search: 
+    searchValue = ""
+    if search:
+        searchValue = search
         searchSystems = []
         for system in systems: 
             if str(search).lower() in str(system[0]).lower(): 
                 searchSystems.append(system)
+    
         
         systems = searchSystems    
     
     
-    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem, sucess = sucess, search="")
+    return render_template('index.html', systems=systems, systemBase=systemBase, messagem = messagem, sucess = sucess, search=searchValue)
 
 @app.route('/configure', methods=['GET', 'POST'])
 def initConfigs(): 
@@ -126,6 +129,9 @@ def newSystem():
         nameFolder = request.args.get('systemName')
         pathNewSystem = os.path.join(p.LocateFolderSystems, nameFolder)
 
+        if os.path.exists(pathNewSystem):
+            raise Exception("Ja existe um sistema com esse nome.")
+
         if Command.mkdir(pathNewSystem):
             Command.copy(p.BaseSystem, pathNewSystem)
         
@@ -168,11 +174,16 @@ def editSystem():
             debugSystemOld = request.form["debugSystemOld"] 
             keySelect = request.form["keySelect"] 
             keySystemOld = request.form["keySystemOld"]
+
+            EditSystemNameOldPath = os.path.join(p.LocateFolderSystems, EditSystemName)
+
             
             if EditSystemName != EditSystemNameOld:
+                if os.path.exists(EditSystemNameOldPath):
+                    raise Exception("Ja existe um sistema com esse nome.")
                 EditSystemNameOldPath = os.path.join(p.LocateFolderSystems, EditSystemNameOld)
                 EditSystemNamePath = os.path.join(p.LocateFolderSystems, EditSystemName)
-                Command.move(EditSystemNameOldPath, EditSystemNamePath)
+                os.rename(EditSystemNameOldPath, EditSystemNamePath)
             
             def changeKey():
                 if keySelect != keySystemOld:
@@ -192,8 +203,9 @@ def editSystem():
                 Command.remove(os.path.join(p.LocateFolderSystems, EditSystemName))
                 Command.mkdir(os.path.join(p.LocateFolderSystems, EditSystemName))
                 Command.copy(p.BaseSystem, os.path.join(p.LocateFolderSystems, EditSystemName))
-                Command.copy(os.path.join(p.FolderDebugs, debugSystem), os.path.join(p.LocateFolderSystems, EditSystemName))
-                Command.mkdir(os.path.join(p.LocateFolderSystems, EditSystemName, debugSystem))
+                if debugSystem != "":
+                    Command.copy(os.path.join(p.FolderDebugs, debugSystem), os.path.join(p.LocateFolderSystems, EditSystemName))
+                    Command.mkdir(os.path.join(p.LocateFolderSystems, EditSystemName, debugSystem))
                 changeKey()
             return redirect(url_for('index', sucess="Sistema editado com sucesso!"))
         
@@ -299,6 +311,10 @@ def addKey():
         
         nameKey = request.form['nameKey']
         keyFile = request.form['keyFile']
+
+        temp = os.path.join(p.FolderKeys, nameKey)
+        if os.path.exists(temp):
+            raise Exception("Já existe uma chave com esse nome.")
         
         if not os.path.isfile(keyFile):
             raise Exception("A chave que passou deve ser um arquivo.")
@@ -337,19 +353,28 @@ def AddDebug():
         debugName = request.form['debugName']
         debugFolder = request.form['debugFolder']
         
-        if p.InternalDebug: 
-            if not os.path.exists(os.path.join(p.FolderDebugs, p.InternalDebug)):
-                return redirect(url_for('index', error="Internal Debug not found"))
-            Command.descompact(debugFolder, p.FolderDebugs)
-            Command.copy(os.path.join(p.FolderDebugs, p.InternalDebug), os.path.join(p.FolderDebugs, debugName))
-            Command.remove(os.path.join(p.FolderDebugs, p.InternalDebug))
-            Command.removeFile(debugFolder)
-            return redirect(url_for('index', sucess="Debug adicionado com sucesso!"))
+        temp = "_"
+        while True:
+            if os.path.exists(temp): 
+                temp += "_"
+                continue
+            break
+
+        folderDebug = os.path.join(p.FolderDebugs, temp)
+        folderName = os.path.join(p.FolderDebugs, debugName)
+
+        if os.path.exists(folderName): 
+            raise Exception("Nome do Debug já fornecido anteriormente. Tente outro nome.")
         
-        Command.mkdir(os.path.join(p.FolderDebugs, debugName))
-        Command.descompact(debugFolder, os.path.join(p.FolderDebugs, debugName))
+        if not os.path.exists(debugFolder):
+            raise Exception("O caminho para o debug nao existe.")
+        Command.mkdir(folderDebug)
+        Command.descompact(debugFolder, folderDebug)
+        Command.mkdir(folderName)
+        Command.move(os.path.join(folderDebug, p.InternalDebug), os.path.join(folderName))
+        Command.remove(folderDebug)
         Command.removeFile(debugFolder)
-        
+
         return redirect(url_for('index', sucess="Debug adicionado com sucesso!"))
     
     except Exception as e:

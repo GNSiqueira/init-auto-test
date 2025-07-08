@@ -147,7 +147,7 @@
     <div class="container">
         <div class="header">
             <div class="search-container">
-                <input type="text" name="search" id="search" value="{{search}}" placeholder="Search...">
+                <input type="text" name="search" id="search" value="{{search}}" placeholder="Search..." onkeydown="handleEnter(event);">
                 <button class="button-search bg-green hover:green" type="button" onclick="searchBar();">Search</button>
             </div>
             <div class="action-buttons active-buttons">
