@@ -1,61 +1,27 @@
-import os, json, hashlib, shutil, sys, subprocess
+from concurrent.futures import ThreadPoolExecutor
+import os, json, hashlib, shutil
 from pathlib import Path
-import tkinter as tk
-from tkinter import filedialog
+from tkinter import Tk, filedialog
+
 
 class FileFolder:
     @staticmethod
     def getPathFolder():
-        if os.name == 'nt':  # Windows
-            try:
-                # Constrói o caminho para o script auxiliar
-                script_dir = os.path.dirname(os.path.abspath(__file__))
-                helper_script_path = os.path.join(script_dir, 'tkinter_dialog_helper.py')
-
-                # Executa o script auxiliar em um processo separado e captura sua saída
-                result = subprocess.run(
-                    [sys.executable, helper_script_path, "folder"], # sys.executable garante o interpretador Python correto
-                    capture_output=True, # Captura a saída padrão e de erro
-                    text=True,           # Decodifica a saída como texto
-                    check=True           # Lança CalledProcessError se o script retornar um código de erro
-                )
-                # O caminho selecionado é impresso na saída padrão pelo script auxiliar
-                selected_path = result.stdout.strip()
-                return selected_path
-            except subprocess.CalledProcessError as e:
-                print(f"Erro ao executar o script Tkinter para pasta: {e}")
-                print(f"Stdout: {e.stdout}")
-                print(f"Stderr: {e.stderr}")
-                return "" # Retorna string vazia ou trate o erro apropriadamente
-            except Exception as e:
-                print(f"Erro inesperado ao obter o caminho da pasta: {e}")
-                return ""
-        return filedialog.askdirectory(initialdir=str(Path.home() / "Downloads"))
+        root = Tk()
+        root.withdraw()  # Oculta a janela principal
+        root.attributes('-topmost', True)  # Garante que apareça na frente
+        caminho = filedialog.askdirectory(initialdir=str(Path.home() / "Downloads"))
+        root.destroy()
+        return caminho
 
     @staticmethod
     def getPathFile():
-        if os.name == 'nt':
-            try:
-                script_dir = os.path.dirname(os.path.abspath(__file__))
-                helper_script_path = os.path.join(script_dir, 'tkinter_dialog_helper.py')
-
-                result = subprocess.run(
-                    [sys.executable, helper_script_path, "file"],
-                    capture_output=True,
-                    text=True,
-                    check=True
-                )
-                selected_path = result.stdout.strip()
-                return selected_path
-            except subprocess.CalledProcessError as e:
-                print(f"Erro ao executar o script Tkinter para arquivo: {e}")
-                print(f"Stdout: {e.stdout}")
-                print(f"Stderr: {e.stderr}")
-                return ""
-            except Exception as e:
-                print(f"Erro inesperado ao obter o caminho do arquivo: {e}")
-                return ""
-        return filedialog.askopenfilename(initialdir=str(Path.home() / "Downloads"))
+        root = Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        caminho = filedialog.askopenfilename(initialdir=str(Path.home() / "Downloads"))
+        root.destroy()
+        return caminho
     
 class Persistence:
     def __init__(self):
