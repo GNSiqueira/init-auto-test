@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/index.css">
-    <link rel="stylesheet" href="../static/table.css">
-    <link rel="stylesheet" href="../static/load.css">
-    <link rel="stylesheet" href="../static/modal.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='load.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='modal.css') }}">
     <title>Automate Test</title>
 </head>
 <body>
@@ -61,7 +61,7 @@
             </table>
         </div>
     </div>
-    <script type="module" src="../static/index.js"></script>
-    <script type="module" src="../static/load.js"></script>
+    <script type="module" src="{{ url_for('static', filename='index.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='load.js') }}"></script>
 </body>
 </html>

@@ -135,11 +135,12 @@ class Persistence:
         try: 
             if os.name == 'nt':  # Windows
                 repository = os.path.join(os.getenv('APPDATA'), 'automatetest')
+                print("Windows")
             else:  # Unix (Linux, macOS)
                 repository = os.path.join(os.path.expanduser('~'), '.config', 'automatetest')
             
-            # exist_ok=True evita um erro se a pasta já existir
-            os.makedirs(repository, exist_ok=True)
+            if not os.path.exists(repository): 
+                os.makedirs(repository)
             return repository
         except Exception as e:
             print(f"ERRO CRÍTICO: Não foi possível criar o diretório de configuração. {e}")
